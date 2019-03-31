@@ -1,0 +1,14 @@
+@import '../scss/vars';
+
+.provider-list-item {
+  display: inline-flex !important;
+  height: 120px;
+  width: 120px;
+  cursor: pointer;
+  background: $background-2;
+  box-shadow: $shadow-1;
+
+  a {
+    color: $white-3;
+  }
+}

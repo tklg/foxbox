@@ -1,0 +1,24 @@
+@import '../scss/vars';
+
+.mailbox-list-item {
+  margin: 0 10px;
+  cursor: pointer;
+
+  a {
+    display: inline-block;
+    color: $text-light-2;
+    line-height: 34px;
+    height: 34px;
+    width: 100%;
+    padding: 0 12px;
+    text-decoration: none !important;
+
+    &.active {
+      background: $background-1;
+      box-shadow: $shadow-2-inset;
+    }
+    &:hover {
+      box-shadow: $shadow-2-inset;
+    }
+  }
+}

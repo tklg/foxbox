@@ -1,0 +1,11 @@
+@import '../scss/vars';
+
+.provider-list {
+  width: 100%;
+  height: 100%;
+
+  .providers {
+    list-style: none;
+    max-width: 360px;
+  }
+}

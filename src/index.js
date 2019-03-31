@@ -8,7 +8,8 @@ import { CSSTransition } from 'react-transition-group'
 import ErrorBoundary from './ErrorBoundary'
 import reducer from './reducers'
 
-import Login from './containers/login'
+import Home from './containers/home'
+import App from './containers/app'
 import './scss/app.scss'
 
 const store = createStore(
@@ -20,15 +21,10 @@ const A = () =>
   <ErrorBoundary>
     <Provider store={store}>
       <Router basepath='/'>
-        <Route path='/login' exact>
+        <Route path='/' exact component={Home} />
+        <Route path='/box' exact>
           {({ match }) => (
-            <CSSTransition
-              in={match != null}
-              timeout={300}
-              classNames='login'
-              unmountOnExit>
-              <Login />
-            </CSSTransition>
+            <App />
           )}
         </Route>
       </Router>
@@ -36,3 +32,11 @@ const A = () =>
   </ErrorBoundary>
 
 ReactDOM.render(<A />, document.getElementById('root'))
+/*
+<CSSTransition
+  in={match != null}
+  timeout={300}
+  classNames='home'
+  unmountOnExit>
+</CSSTransition>
+*/

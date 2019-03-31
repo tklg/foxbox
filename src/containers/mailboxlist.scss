@@ -1,0 +1,14 @@
+@import '../scss/vars';
+
+.mailbox-list {
+  width: 280px;
+  background: $background-2;
+  box-shadow: $shadow-1;
+  z-index: 800;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
+  }
+}
