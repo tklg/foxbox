@@ -1,5 +1,13 @@
 @import '../scss/vars';
 
 .mailbox {
+  .connect-provider {
+    height: 100%;
+    width: 100%;
 
+    h1 {
+      color: $text-light-2;
+      margin-bottom: 20px;
+    }
+  }
 }

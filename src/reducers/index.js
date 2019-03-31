@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux'
-import login from './login'
+import providers from './providers'
+import mailboxes from './mailboxes'
 
 export default combineReducers({
-  login
+  providers,
+  mailboxes
 })

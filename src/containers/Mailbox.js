@@ -10,9 +10,20 @@ class Mailbox extends React.Component {
   }
   render () {
     return <div className='mailbox flex'>
-      <ProviderList />
+      {!this.props.mailboxes.length &&
+        <div className='connect-provider flex-container flex-center'>
+          <h1>Sign in to a mailbox to get started.</h1>
+          <ProviderList />
+        </div>
+      }
     </div>
   }
 }
 
-export default Mailbox
+const mapStateToProps = ({ mailboxes }) => {
+  return {
+    mailboxes: mailboxes.all
+  }
+}
+
+export default connect(mapStateToProps)(Mailbox)

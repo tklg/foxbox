@@ -1,14 +1,59 @@
 @import '../scss/vars';
 
 .provider-list-item {
-  display: inline-flex !important;
+  display: inline-block;
   height: 120px;
   width: 120px;
   cursor: pointer;
   background: $background-2;
   box-shadow: $shadow-1;
+  transition: 0.3s background $transition,
+              0.3s box-shadow $transition;
 
   a {
-    color: $white-3;
+    color: $accent-2;
+    text-decoration: none !important;
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+
+    .icon {
+      height: 60px;
+      width: 60px;
+      position: absolute;
+      top: calc(50% - 30px);
+      left: calc(50% - 30px);
+      transition: 0.3s top $transition;
+
+      path {
+        transition: 0.3s fill $transition;
+      }
+    }
+    .name {
+      opacity: 0;
+      width: 60px;
+      text-align: center;
+      display: inline-block;
+      top: calc(50% + 12px);
+      left: calc(50% - 30px);
+      transition: 0.3s opacity $transition,
+                  0.3s top $transition;
+    }
+  }
+  &:hover {
+    background: $accent-3;
+    box-shadow: $shadow-2;
+
+    .icon {
+      top: calc(50% - 40px);
+
+      path {
+        fill: $accent-2;
+      }
+    }
+    .name {
+      top: calc(50% + 16px);
+      opacity: 1;
+    }
   }
 }

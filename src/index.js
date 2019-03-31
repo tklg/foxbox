@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom'
 import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import thunk from 'redux-thunk'
-import { CSSTransition } from 'react-transition-group'
 import ErrorBoundary from './ErrorBoundary'
 import reducer from './reducers'
 
@@ -22,21 +21,9 @@ const A = () =>
     <Provider store={store}>
       <Router basepath='/'>
         <Route path='/' exact component={Home} />
-        <Route path='/box' exact>
-          {({ match }) => (
-            <App />
-          )}
-        </Route>
+        <Route path='/box' exact component={App} />
       </Router>
     </Provider>
   </ErrorBoundary>
 
 ReactDOM.render(<A />, document.getElementById('root'))
-/*
-<CSSTransition
-  in={match != null}
-  timeout={300}
-  classNames='home'
-  unmountOnExit>
-</CSSTransition>
-*/

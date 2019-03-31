@@ -8,7 +8,7 @@
     "stop": "./node_modules/.bin/pm2 delete sendlet",
     "start:dev": "./node_modules/.bin/npm-run-all --parallel dev:client dev:server",
     "dev:client": "./node_modules/.bin/webpack-dev-server --mode development",
-    "dev:server": "node src/index",
+    "dev:server": "node server/index",
     "build": "./node_modules/.bin/webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

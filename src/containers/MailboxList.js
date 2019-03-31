@@ -6,15 +6,6 @@ import MailboxListItem from '../components/MailboxListItem'
 class MailboxList extends React.Component {
   constructor () {
     super()
-    this.state = {
-      mailboxes: [{
-        name: 'foo',
-        href: 'foo'
-      }, {
-        name: 'bar',
-        href: 'bar'
-      }]
-    }
     this.getMailboxes = this.getMailboxes.bind(this)
   }
   getMailboxes (boxes) {
@@ -25,10 +16,16 @@ class MailboxList extends React.Component {
   render () {
     return <nav className='mailbox-list'>
       <ul>
-        {this.getMailboxes(this.state.mailboxes)}
+        {this.getMailboxes(this.props.mailboxes)}
       </ul>
     </nav>
   }
 }
 
-export default MailboxList
+const mapStateToProps = ({ mailboxes }) => {
+  return {
+    mailboxes: mailboxes.all
+  }
+}
+
+export default connect(mapStateToProps)(MailboxList)
