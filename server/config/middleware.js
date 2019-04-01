@@ -25,10 +25,10 @@ module.exports = {
   routed: [
     {
       route: '/',
-      middleware: express.static(path.join(__dirname, '..', '/public'))
+      fn: express.static(path.join(__dirname, '..', '/public'))
     }, {
       route: '*',
-      middleware: notFoundMiddleware
+      fn: notFoundMiddleware
     }
   ]
 }

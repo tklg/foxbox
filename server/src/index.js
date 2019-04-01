@@ -8,7 +8,6 @@ const routes = require(sourcePath('config/routes'))
 const middleware = require(sourcePath('config/middleware'))
 
 const express = require('express')
-
 const PORT = process.env.PORT || 3001
 
 module.exports = class BoxServer {
@@ -20,7 +19,6 @@ module.exports = class BoxServer {
     this.controllers = {}
 
     await this.loadControllers()
-    await this.loadRoutes()
     await this.loadMiddleware()
 
     server.listen(PORT, () => {
@@ -38,7 +36,6 @@ module.exports = class BoxServer {
         if (this.controllers[controller]) {
           if (this.controllers[controller][action]) {
             this.app[verb](pth, this.controllers[controller][action])
-            Log.d(TAG, `${verb} ${pth}`)
           } else {
             Log.e(TAG, `could not find action: ${str}`)
           }
@@ -60,7 +57,7 @@ module.exports = class BoxServer {
             Log.d(TAG, `registered controller: ${name}`)
           } catch (e) {
             Log.e(TAG, e)
-            reject()
+            reject(e)
           }
         }
         resolve()
@@ -68,14 +65,17 @@ module.exports = class BoxServer {
     })
   }
   async loadMiddleware () {
+    // Log.d(TAG, middleware)
     const { routed, ...rest } = middleware
-
-    for (const item of routed) {
-      this.app.use(item.route, item.middleware)
-    }
 
     for (const item in rest) {
       this.app.use(rest[item])
+    }
+
+    await this.loadRoutes()
+
+    for (const item of routed) {
+      this.app.use(item.route, item.fn)
     }
   }
 }

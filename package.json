@@ -22,9 +22,12 @@
     "emailjs-smtp-client": "^2.0.1",
     "emailjs-tcp-socket": "^2.0.2",
     "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "mysql": "^2.16.0",
     "passport": "^0.4.0",
     "passport-google-oauth20": "^2.0.0",
-    "passport-outlook": "^2.2.0"
+    "passport-outlook": "^2.2.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
