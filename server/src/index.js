@@ -6,12 +6,12 @@ const sourcePath = p => path.join('../', p)
 
 const routes = require(sourcePath('config/routes'))
 const middleware = require(sourcePath('config/middleware'))
-
 const express = require('express')
 const PORT = process.env.PORT || 3001
 
 module.exports = class BoxServer {
   async raise () {
+    const loadModels = require('./Models')
     const app = express()
     const server = require('http').Server(app)
     this.server = server
@@ -20,6 +20,8 @@ module.exports = class BoxServer {
 
     await this.loadControllers()
     await this.loadMiddleware()
+
+    await loadModels()
 
     server.listen(PORT, () => {
       Log.d(TAG, `Express running on :${PORT}`)

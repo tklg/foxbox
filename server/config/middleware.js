@@ -1,4 +1,6 @@
 const express = require('express')
+const session = require('express-session')
+const passport = require('passport')
 const path = require('path')
 const bodyParser = require('body-parser')
 
@@ -21,6 +23,13 @@ module.exports = {
   urlencoded: bodyParser.urlencoded({ extended: true }),
   json: bodyParser.json(),
   crossDomain: allowCrossDomain,
+  session: session({
+    secret: 'foobarbaz',
+    resave: false,
+    saveUninitialized: true
+  }),
+  passportInit: passport.initialize(),
+  passport: passport.session(),
 
   routed: [
     {
