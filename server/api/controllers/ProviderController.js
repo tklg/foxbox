@@ -1,5 +1,7 @@
+/* global Log Passport */
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+const TAG = 'ProviderController'
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -8,7 +10,7 @@ passport.use(new GoogleStrategy({
   passReqToCallback: true
 }, async function (req, accessToken, refreshToken, profile, cb) {
   const pass = await Passport.findOrCreate({ provider: 'google', identifier: profile.id })
-  cb(pass)
+  cb(null, pass, profile, null)
 }))
 
 module.exports = {
@@ -36,8 +38,17 @@ module.exports = {
   connectCallback: async (req, res, next) => {
     let provider = req.params.provider
     if (provider === 'gmail') provider = 'google'
-    passport.authorize(provider, { failureRedirect: '/login' })(req, res, (req, res) => {
+    passport.authorize(provider, async (e, pass, info, status) => {
+      if (e) {
+        Log.e(TAG, e)
+      }
+
+      const user = req.user
+      pass.user = user
+      await pass.save()
+
+      if (process.env.NODE_ENV === 'development') return res.redirect('http://localhost:3000/box')
       res.redirect('/box')
-    })
+    })(req, res, next)
   }
 }

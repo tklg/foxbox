@@ -1,4 +1,4 @@
-const Log = require('./Log')
+global.Log = require('./Log')
 const path = require('path')
 const fs = require('fs')
 const TAG = 'server'
@@ -8,6 +8,13 @@ const routes = require(sourcePath('config/routes'))
 const middleware = require(sourcePath('config/middleware'))
 const express = require('express')
 const PORT = process.env.PORT || 3001
+
+process.on('unhandledRejection', (e, p) => {
+  Log.e(TAG, 'Unhandled Rejection at: Promise', p)
+  Log.e(TAG, e)
+})
+
+const debugMiddleware = (v, p) => (re, rq, n) => { Log.d(TAG, `Handling ${v.toUpperCase()} ${p}`); n() }
 
 module.exports = class BoxServer {
   async raise () {
@@ -37,7 +44,7 @@ module.exports = class BoxServer {
         const action = str.split('#')[1]
         if (this.controllers[controller]) {
           if (this.controllers[controller][action]) {
-            this.app[verb](pth, this.controllers[controller][action])
+            this.app[verb](pth, debugMiddleware(verb, pth), this.controllers[controller][action])
           } else {
             Log.e(TAG, `could not find action: ${str}`)
           }

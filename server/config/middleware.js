@@ -13,10 +13,7 @@ const allowCrossDomain = function (req, res, next) {
 }
 
 const notFoundMiddleware = (req, res) => {
-  res.status(404).json({
-    status: 404,
-    error: `The resource '${req.originalUrl}' could not be found.`
-  })
+  res.sendFile(path.join(__dirname, '../public/index.html'))
 }
 
 module.exports = {

@@ -6,6 +6,14 @@ const knex = require('./Database')
 
 const sourcePath = p => path.join('../', p)
 
+const capitalize = str => str[0].toUpperCase() + str.substr(1)
+const titleize = str => str.split(/_/).map(s => capitalize(s)).join('')
+const snakeize = str => str.replace(/([^\b])([A-Z])/g, '$1_$2').toLowerCase()
+const camelize = str => {
+  const s = titleize(str)
+  return s[0].toLowerCase() + s.substr(1)
+}
+
 function loadModels () {
   return new Promise((resolve, reject) => {
     fs.readdir(path.resolve(path.join(__dirname, sourcePath('api/models'))), async (err, files) => {
@@ -31,20 +39,6 @@ function loadModels () {
 class MDL {}
 
 function bindModel (name, desc) {
-  const obj = Model.build()
-  const __table = name.toLowerCase()
-
-  function clean (params) {
-    for (const i in params) {
-      const attr = obj.attributes[i]
-      if (params[i] instanceof MDL) {
-        if (attr.references !== params[i].__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${params[i].__table}.`)
-        params[i] = params[i].id
-      }
-    }
-    return params
-  }
-
   class Model extends MDL {
     static build () {
       const { ...attrs } = desc
@@ -64,13 +58,13 @@ function bindModel (name, desc) {
       }
       return obj
     }
-    constructor () {
+    constructor (vals) {
       super()
       this.id = -1
       this.__table = __table
       this.__dirty = {}
-      for (const attr in obj.attributes) {
-        this[attr] = null
+      for (const attr in { ...obj.attributes, ...vals }) {
+        this[attr] = vals[attr]
         this.__dirty[attr] = false
       }
 
@@ -91,7 +85,7 @@ function bindModel (name, desc) {
               if (!validType(value, attr)) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${attr}.`)
             } else {
               if (value instanceof MDL) {
-                if (attr.references !== value.__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${value.__table}.`)
+                if (attr.references !== value.__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${titleize(value.__table)}.`)
                 value = value.id
                 attr.type = attr.references
               }
@@ -106,48 +100,92 @@ function bindModel (name, desc) {
     static knex () {
       return knex(__table)
     }
-    static create (q) {
+    static async create (q) {
       q = clean(q)
-      return knex(__table).insert(q)
+      return knex.transaction(async trx => {
+        const now = Date.now()
+        await trx(__table).insert({ ...q, created_at: now, updated_at: now })
+        const vals = await trx(__table).where(q).first()
+        if (!vals) return null
+        return new Model(camelizeAll(vals))
+      })
     }
-    static where (q) {
+    static async where (q) {
       q = clean(q)
-      return knex(__table).where(q)
+      const vals = await knex(__table).where(q)
+      if (!vals.length) return []
+      return vals.map(x => new Model(camelizeAll(x)))
     }
-    static findOne (q) {
+    static async findOne (q) {
       q = clean(q)
-      return knex(__table).where(q).limit(1)
+      const val = await knex(__table).where(q).first()
+      if (!val) return null
+      return new Model(camelizeAll(val))
     }
-    static findOrCreate (q) {
+    static async findOrCreate (q) {
       q = clean(q)
       return knex.transaction(trx => {
-        trx(__table).where(q).then(res => {
+        return trx(__table).where(q).then(res => {
           if (res.length === 0) {
-            return trx(__table).insert(q).then(() => {
-              return trx(__table).where(q)
+            const now = Date.now()
+            return trx(__table).insert({ ...q, created_at: now, updated_at: now }).then(() => {
+              return trx(__table).where(new Model(camelize(q)))
             })
           } else {
-            return res
+            return new Model(camelize(res))
           }
         })
       })
     }
-    static all () {
-      return knex(__table).where({})
+    static async all () {
+      const vals = await knex(__table).where({})
+      if (!vals.length) return []
+      return vals.map(x => new Model(camelizeAll(x)))
     }
     save () {
       const attrs = {}
+      this.updatedAt = Date.now()
+      this.__dirty['updatedAt'] = true
       for (const attr in this.__dirty) {
         if (this.__dirty[attr]) {
-          attrs[attr] = this[attr]
+          attrs[snakeize(attr)] = this[attr]
           this.__dirty[attr] = false
         }
       }
-      knex(__table).where({ id: this.id }).update(attrs)
+      return knex(__table).where({ id: this.id }).update(attrs)
+    }
+    update (q) {
+      for (const key in q) {
+        this[key] = q[key]
+      }
+      return this.save()
     }
     delete () {
-      knex(__table).where({ id: this.id }).del()
+      return knex(__table).where({ id: this.id }).del()
     }
+  }
+
+  const obj = Model.build()
+  const __table = name.toLowerCase()
+
+  function clean (params) {
+    const pars = {}
+    for (const i in params) {
+      const attr = obj.attributes[i]
+      if (params[i] instanceof MDL) {
+        if (attr.references !== params[i].__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${params[i].__table}.`)
+        params[i] = params[i].id
+      }
+      pars[snakeize(i)] = params[i]
+    }
+    return pars
+  }
+  function camelizeAll (params) {
+    const pars = {}
+    for (const i in params) {
+      pars[camelize(i)] = params[i]
+    }
+    return pars
   }
   return Model
 }
