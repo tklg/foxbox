@@ -9,7 +9,12 @@ passport.use(new GoogleStrategy({
   callbackURL: process.env.ROOT_URL + '/connect/google/callback',
   passReqToCallback: true
 }, async function (req, accessToken, refreshToken, profile, cb) {
-  const pass = await Passport.findOrCreate({ provider: 'google', identifier: profile.id })
+  const pass = await Passport.findOrCreate({ provider: 'google', identifier: profile.id, user: req.user })
+
+  if (accessToken) pass.accessToken = accessToken
+  if (refreshToken) pass.refreshToken = refreshToken
+  if (accessToken || refreshToken) await pass.save()
+    
   cb(null, pass, profile, null)
 }))
 

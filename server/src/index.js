@@ -1,3 +1,4 @@
+/* global Log */
 global.Log = require('./Log')
 const path = require('path')
 const fs = require('fs')
@@ -14,7 +15,10 @@ process.on('unhandledRejection', (e, p) => {
   Log.e(TAG, e)
 })
 
-const debugMiddleware = (v, p) => (re, rq, n) => { Log.d(TAG, `Handling ${v.toUpperCase()} ${p}`); n() }
+const debugMiddleware = (v, p) => (re, rq, n) => {
+  Log.d(TAG, `Handling ${v.toUpperCase()} ${p}`)
+  n()
+}
 
 module.exports = class BoxServer {
   async raise () {

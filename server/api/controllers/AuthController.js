@@ -5,7 +5,7 @@ const OAuth2Strategy = require('passport-oauth2').Strategy
 const TAG = 'AuthController'
 
 passport.serializeUser(function (user, done) {
-  done(null, user.id)
+  done(user.id)
 })
 
 passport.deserializeUser(async function (user, done) {
