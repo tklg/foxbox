@@ -38,8 +38,9 @@ function loadModels () {
 
 class MDL {}
 
-function bindModel (name, desc) {
+function bindModel (name, { beforeCreate, beforeUpdate, beforeDelete, ...desc }) {
   class Model extends MDL {
+    static get __table () { return __table }
     static build () {
       const { ...attrs } = desc
       const obj = {
@@ -61,7 +62,6 @@ function bindModel (name, desc) {
     constructor (vals) {
       super()
       this.id = -1
-      this.__table = __table
       this.__dirty = {}
       for (const attr in { ...obj.attributes, ...vals }) {
         this[attr] = vals[attr]
@@ -85,9 +85,9 @@ function bindModel (name, desc) {
               if (!validType(value, attr)) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${attr}.`)
             } else {
               if (value instanceof MDL) {
-                if (attr.references !== value.__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${titleize(value.__table)}.`)
-                value = value.id
-                attr.type = attr.references
+                if (snakeize(attr.references) !== Object.getPrototypeOf(value).constructor.__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${titleize(value.__table)}.`)
+                value = value.id || value
+                attr.type = snakeize(attr.references)
               }
               if (!validType(value, attr.type)) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${attr.type}.`)
             }
@@ -102,8 +102,9 @@ function bindModel (name, desc) {
     }
     static async create (q) {
       q = clean(q)
+      if (beforeCreate) await beforeCreate(q)
       return knex.transaction(async trx => {
-        const now = Date.now()
+        const now = +(Date.now() / 1000).toFixed(0)
         await trx(__table).insert({ ...q, created_at: now, updated_at: now })
         const vals = await trx(__table).where(q).first()
         if (!vals) return null
@@ -124,17 +125,17 @@ function bindModel (name, desc) {
     }
     static async findOrCreate (q) {
       q = clean(q)
-      return knex.transaction(trx => {
-        return trx(__table).where(q).then(res => {
-          if (res.length === 0) {
-            const now = Date.now()
-            return trx(__table).insert({ ...q, created_at: now, updated_at: now }).then(() => {
-              return trx(__table).where(new Model(camelize(q)))
-            })
-          } else {
-            return new Model(camelize(res))
-          }
-        })
+      return knex.transaction(async trx => {
+        const res = await trx(__table).where(q).first()
+        if (!res) {
+          const now = +(Date.now() / 1000).toFixed(0)
+          if (beforeCreate) await beforeCreate(q)
+          await trx(__table).insert({ ...q, created_at: now, updated_at: now })
+          const x = await trx(__table).where(q).first()
+          return new Model(camelizeAll(x))
+        } else {
+          return new Model(camelizeAll(res[0]))
+        }
       })
     }
     static async all () {
@@ -142,9 +143,10 @@ function bindModel (name, desc) {
       if (!vals.length) return []
       return vals.map(x => new Model(camelizeAll(x)))
     }
-    save () {
+    async save () {
       const attrs = {}
-      this.updatedAt = Date.now()
+      if (beforeUpdate) await beforeUpdate(this)
+      this.updatedAt = +(Date.now() / 1000).toFixed(0)
       this.__dirty['updatedAt'] = true
       for (const attr in this.__dirty) {
         if (this.__dirty[attr]) {
@@ -152,6 +154,7 @@ function bindModel (name, desc) {
           this.__dirty[attr] = false
         }
       }
+      delete attrs.__dirty
       return knex(__table).where({ id: this.id }).update(attrs)
     }
     update (q) {
@@ -160,24 +163,26 @@ function bindModel (name, desc) {
       }
       return this.save()
     }
-    delete () {
+    async delete () {
+      if (beforeDelete) await beforeDelete(this)
       return knex(__table).where({ id: this.id }).del()
     }
   }
 
   const obj = Model.build()
-  const __table = name.toLowerCase()
+  const __table = snakeize(name)
 
   function clean (params) {
     const pars = {}
     for (const i in params) {
       const attr = obj.attributes[i]
       if (params[i] instanceof MDL) {
-        if (attr.references !== params[i].__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${params[i].__table}.`)
-        params[i] = params[i].id
+        if (snakeize(attr.references) !== Object.getPrototypeOf(params[i]).constructor.__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${params[i].__table}.`)
+        params[i] = params[i].id || params[i]
       }
       pars[snakeize(i)] = params[i]
     }
+    delete pars.__dirty
     return pars
   }
   function camelizeAll (params) {

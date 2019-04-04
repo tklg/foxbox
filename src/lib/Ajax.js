@@ -121,6 +121,7 @@ export default class Ajax {
       }
 
       xhr.open(opts.method || 'GET', opts.url + qs || window.location.href)
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
       if (opts.headers) {
         for (let key in opts.headers) xhr.setRequestHeader(key, opts.headers[key])
       }

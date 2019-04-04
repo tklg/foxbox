@@ -1,8 +1,10 @@
 module.exports = {
-  userController: {
-    me: [ 'sessionAuth' ]
+  UserController: {
+    me: [ 'tokenAuth' ]
   },
-  providerController: {
-    '*': [ 'sessionAuth' ]
+  ProviderController: {
+    list: [ 'tokenAuth' ],
+    connect: [ 'sessionAuth' ],
+    connectCallback: [ 'sessionAuth' ]
   }
 }

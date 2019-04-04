@@ -1,15 +1,19 @@
-/* global Log User Passport */
+/* global Log User Passport AccessToken RefreshToken */
 const passport = require('passport')
 const https = require('https')
 const OAuth2Strategy = require('passport-oauth2').Strategy
 const TAG = 'AuthController'
 
 passport.serializeUser(function (user, done) {
-  done(user.id)
+  // Log.d(TAG, 's user: ' + user.id)
+  done(null, user.id)
 })
 
 passport.deserializeUser(async function (user, done) {
-  done(await User.findOne({ id: user }))
+  const u = await User.findOne({ id: user })
+  // Log.d(TAG, 'de user: ' + u.id)
+  if (!u) return done(new Error('user not found: ' + user))
+  done(null, u)
 })
 
 const client = new OAuth2Strategy({
@@ -74,15 +78,17 @@ module.exports = {
     passport.authenticate('oauth2', { scope: ['user.name', 'user.email'] })(req, res, next)
   },
   loginCallback: async (req, res, next) => {
-    passport.authenticate('oauth2', (e, user, info, status) => {
-      if (e) {
-        Log.e(TAG, e)
-      }
-      req.login(user, (e) => {
-        if (e) {
-          Log.e(TAG, e)
-        }
-        req.session.authenticated = true
+    passport.authenticate('oauth2', async (e, user, info, status) => {
+      if (e) return Log.e(TAG, e)
+      const accessToken = await AccessToken.create({ user })
+      const refreshToken = await RefreshToken.findOne({ id: accessToken.refreshToken })
+
+      req.login(user, () => {
+        res.cookie('tok', JSON.stringify({
+          access_token: accessToken.token,
+          refresh_token: refreshToken.token,
+          expires: accessToken.expiresAt
+        }), { expiresAt: accessToken.expiresAt })
         if (req.query.next) {
           res.redirect(req.query.next)
         } else {
