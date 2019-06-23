@@ -71,7 +71,17 @@ module.exports = class BoxServer {
               debugMiddleware(verb, pth),
               ...globalPolicy,
               ...actionPolicies,
-              this.controllers[controller][action])
+              (req, res, next) => {
+                try {
+                  this.controllers[controller][action](req, res, next)
+                } catch (e) {
+                  res.status(500).json({
+                    error: e.toString(),
+                    hint: e.stack
+                  })
+                }
+              })
+            Log.d(TAG, `Loaded route: ${verb.toUpperCase()} ${pth}`)
           } else {
             Log.e(TAG, `could not find action: ${str}`)
           }

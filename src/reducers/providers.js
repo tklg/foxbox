@@ -1,7 +1,9 @@
-import actions from '../actions/providers'
+import actions from '../actions'
 
 const initialState = {
-  all: []
+  available: [],
+  connected: [],
+  active: -1
 }
 
 export default function (state = initialState, { type, data }) {
@@ -9,7 +11,13 @@ export default function (state = initialState, { type, data }) {
     case actions.set_providers:
       return {
         ...state,
-        all: data
+        ...data,
+        active: -1
+      }
+    case actions.set_provider:
+      return {
+        ...state,
+        active: data
       }
     default: return state
   }

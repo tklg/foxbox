@@ -4,6 +4,8 @@ const Log = require('./Log')
 const TAG = 'models'
 const knex = require('./Database')
 
+const DIRTYSYM = Symbol.for('dirty')
+
 const sourcePath = p => path.join('../', p)
 
 const capitalize = str => str[0].toUpperCase() + str.substr(1)
@@ -62,10 +64,10 @@ function bindModel (name, { beforeCreate, beforeUpdate, beforeDelete, ...desc })
     constructor (vals) {
       super()
       this.id = -1
-      this.__dirty = {}
+      this[DIRTYSYM] = {}
       for (const attr in { ...obj.attributes, ...vals }) {
         this[attr] = vals[attr]
-        this.__dirty[attr] = false
+        this[DIRTYSYM][attr] = false
       }
 
       return new Proxy(this, {
@@ -87,11 +89,11 @@ function bindModel (name, { beforeCreate, beforeUpdate, beforeDelete, ...desc })
               if (value instanceof MDL) {
                 if (snakeize(attr.references) !== Object.getPrototypeOf(value).constructor.__table) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${titleize(value.__table)}.`)
                 value = value.id || value
-                attr.type = snakeize(attr.references)
+                attr.type = 'number'
               }
               if (!validType(value, attr.type)) throw new Error(`The attribute "${name}" on ${obj.name} must be of type ${attr.type}.`)
             }
-            target.__dirty[name] = true
+            target[DIRTYSYM][name] = true
           }
           return Reflect.set(target, name, value, receiver)
         }
@@ -134,7 +136,7 @@ function bindModel (name, { beforeCreate, beforeUpdate, beforeDelete, ...desc })
           const x = await trx(__table).where(q).first()
           return new Model(camelizeAll(x))
         } else {
-          return new Model(camelizeAll(res[0]))
+          return new Model(camelizeAll(res))
         }
       })
     }
@@ -147,14 +149,14 @@ function bindModel (name, { beforeCreate, beforeUpdate, beforeDelete, ...desc })
       const attrs = {}
       if (beforeUpdate) await beforeUpdate(this)
       this.updatedAt = +(Date.now() / 1000).toFixed(0)
-      this.__dirty['updatedAt'] = true
-      for (const attr in this.__dirty) {
-        if (this.__dirty[attr]) {
+      this[DIRTYSYM]['updatedAt'] = true
+      for (const attr in this[DIRTYSYM]) {
+        if (this[DIRTYSYM][attr]) {
           attrs[snakeize(attr)] = this[attr]
-          this.__dirty[attr] = false
+          this[DIRTYSYM][attr] = false
         }
       }
-      delete attrs.__dirty
+      delete attrs[DIRTYSYM]
       return knex(__table).where({ id: this.id }).update(attrs)
     }
     update (q) {
@@ -182,7 +184,7 @@ function bindModel (name, { beforeCreate, beforeUpdate, beforeDelete, ...desc })
       }
       pars[snakeize(i)] = params[i]
     }
-    delete pars.__dirty
+    delete pars[DIRTYSYM]
     return pars
   }
   function camelizeAll (params) {

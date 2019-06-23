@@ -24,7 +24,7 @@ class ProviderList extends React.Component {
 
 const mapStateToProps = ({ providers }) => {
   return {
-    providers: providers.all
+    providers: providers.available
   }
 }
 

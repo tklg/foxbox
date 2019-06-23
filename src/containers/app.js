@@ -8,9 +8,6 @@ import Mailbox from './Mailbox'
 import { fetchProviders } from '../actions/providers'
 
 class App extends React.Component {
-  constructor () {
-    super()
-  }
   componentDidMount () {
     this.props.dispatch(fetchProviders())
   }
@@ -22,7 +19,7 @@ class App extends React.Component {
       </header>
       <main className='flex flex-container'>
         <CSSTransition
-          in={this.props.mailboxes.length > 0}
+          in={this.props.providers.length > 0}
           timeout={300}
           classNames='mailbox-list'
           unmountOnExit>
@@ -34,9 +31,9 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = ({ mailboxes }) => {
+const mapStateToProps = ({ providers, mailboxes }) => {
   return {
-    mailboxes: mailboxes.all
+    providers: providers.connected
   }
 }
 

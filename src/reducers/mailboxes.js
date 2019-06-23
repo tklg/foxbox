@@ -1,15 +1,17 @@
+import actions from '../actions'
+
 const initialState = {
-  all: [/*{
-    name: 'foo',
-    href: 'foo'
-  }, {
-    name: 'bar',
-    href: 'bar'
-  }*/]
+  // connected provider indexes,
+  active: null
 }
 
 export default function (state = initialState, { type, data }) {
   switch (type) {
+    case actions.set_mailboxes_for_provider:
+      return {
+        ...state,
+        [data.provider]: data.mailboxes
+      }
     default: return state
   }
 }

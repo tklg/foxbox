@@ -9,5 +9,6 @@ module.exports = {
     type: 'string'
   },
   accessToken: 'string',
-  refreshToken: 'string'
+  refreshToken: 'string',
+  email: 'string'
 }

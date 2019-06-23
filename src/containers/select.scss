@@ -1,0 +1,104 @@
+@import '../scss/vars';
+
+.select-container {
+  position: relative;
+  height: 40px;
+  line-height: 40px;
+  margin: 0 10px;
+  cursor: pointer;
+
+  .select-current {
+    padding: 0 10px;
+    border-bottom: 2px solid $white-4;
+
+    span {
+      display: inline-block;
+      color: $white-1;
+
+      &.icon {
+        height: 40px;
+        width: 40px;
+        padding: 5px;
+        
+        svg {
+          height: 30px;
+          width: 30px;
+
+          path {
+            fill: $white-2;
+          }
+        }
+      }
+      div {
+        .icon {
+          vertical-align: middle;
+          margin-right: 10px;
+
+          path {
+            fill: $white-3;
+          }
+
+          & ~ span {
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+  }
+  .select-items {
+    top: -10px;
+    width: 100%;
+    position: absolute;
+    background: $background-4;
+    list-style: none;
+    margin: 0;
+    max-height: 0;
+    pointer-events: none;
+    overflow: hidden;
+    padding: 0;
+    box-shadow: none;
+    opacity: 0;
+    color: $white-1;
+    transition: .15s max-height $transition,
+                .15s padding $transition,
+                .15s box-shadow $transition,
+                .15s opacity $transition,
+                .1s color $transition;
+
+    li {
+      display: inline-block;
+      width: 100%;
+      padding: 0 10px;
+      border-bottom: 1px solid $white-5;
+
+      &:last-of-type {
+        border: none;
+      }
+      &:hover {
+        background: $white-4;
+      }
+
+      .icon {
+        vertical-align: middle;
+        margin-right: 10px;
+
+        path {
+          fill: $white-3;
+        }
+
+        & ~ span {
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+  &.active .select-items {
+    color: $white-1;
+    opacity: 1;
+    box-shadow: $shadow-1;
+    padding: 10px 0;
+    overflow: auto;
+    max-height: calc(100vh / 2);
+    pointer-events: all;
+  }
+}

@@ -5,9 +5,6 @@ import './mailbox.scss'
 import ProviderList from './ProviderList'
 
 class Mailbox extends React.Component {
-  constructor () {
-    super()
-  }
   render () {
     return <div className='mailbox flex'>
       {!this.props.mailboxes.length &&
@@ -20,9 +17,9 @@ class Mailbox extends React.Component {
   }
 }
 
-const mapStateToProps = ({ mailboxes }) => {
+const mapStateToProps = ({ providers }) => {
   return {
-    mailboxes: mailboxes.all
+    mailboxes: providers.connected
   }
 }
 
