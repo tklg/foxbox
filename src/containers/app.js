@@ -31,9 +31,12 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = ({ providers, mailboxes }) => {
+const mapStateToProps = ({ router, providers, mailboxes }) => {
+  const route = router.location.pathname || ''
+  const path = providers.active ? route.substr(5 + providers.active.length + 1) : ''
   return {
-    providers: providers.connected
+    providers: providers.connected,
+    path
   }
 }
 

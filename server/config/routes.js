@@ -8,5 +8,7 @@ module.exports = {
   'GET /connect/:provider': 'Provider#connect',
   'GET /connect/:provider/callback': 'Provider#connectCallback',
 
-  'GET /api/providers/:id/mailboxes': 'Provider#listMailboxes'
+  'GET /api/providers/:id/mailboxes': 'Provider#listMailboxes',
+
+  'GET /api/mailboxes/:provider/:box/messages': 'Provider#listMessages'
 }

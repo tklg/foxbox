@@ -5,6 +5,7 @@
   cursor: pointer;
 
   $itemHeight: 40px;
+  $padding: 12px;
 
   a,
   &.dropdown > span {
@@ -13,24 +14,37 @@
     line-height: $itemHeight;
     height: $itemHeight;
     width: 100%;
-    padding: 0 12px;
+    padding: 0 $padding;
     text-decoration: none !important;
+    user-select: none;
 
     &.active {
       background: $white-4;
     }
-    &:hover {
+    &:hover:not(.active) {
       background: $white-5;
     }
   }
 
   &.dropdown {
+
+    .icon {
+      margin: 5px 0;
+      path {
+        fill: $white-3;
+      }
+    }
+
     ul {
       padding: 0;
-      margin: 0;
+      margin: 0 -10px;
 
       li {
-        margin: 0 0 0 14px;
+
+        a,
+        span {
+          padding: 0 0 0 #{$padding + 14px};
+        }
       }
     }
   }

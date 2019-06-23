@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import MailboxListItem from '../components/MailboxListItem'
+import MailboxListItem from './MailboxListItem'
 import Icon from '../components/Icon'
 import Select from './Select'
 import { setProvider } from '../actions/providers'
@@ -26,9 +26,9 @@ class MailboxList extends React.Component {
       <Select
         items={this.props.providers}
         itemRenderer={this.getProvider}
-        activeIndex={this.props.activeProvider}
+        activeIndex={this.props.providers.findIndex(x => x.id === this.props.activeProvider)}
         placeholder='Select mailbox'
-        onChange={(i) => this.props.dispatch(setProvider(i))} />
+        onChange={(i) => this.props.dispatch(setProvider(this.props.providers[i].id))} />
 
       <ul className='flex'>
         {this.getMailboxes(this.props.mailboxes)}
@@ -40,7 +40,7 @@ class MailboxList extends React.Component {
 const mapStateToProps = ({ providers, mailboxes }) => {
   return {
     providers: providers.connected,
-    mailboxes: providers.active > -1 && mailboxes[providers.active] ? mailboxes[providers.active] : [],
+    mailboxes: mailboxes[providers.active] ? mailboxes[providers.active] : [],
     activeProvider: providers.active
   }
 }

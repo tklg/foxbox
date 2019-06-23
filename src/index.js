@@ -1,12 +1,14 @@
 import React from 'react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 import ReactDOM from 'react-dom'
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider } from 'react-redux'
 import thunk from 'redux-thunk'
 import ErrorBoundary from './ErrorBoundary'
 import reducer from './reducers'
 import Ajax from './lib/Ajax'
+import { routerMiddleware, ConnectedRouter as Router } from 'connected-react-router'
+import { createBrowserHistory } from 'history'
 
 import Home from './containers/home'
 import App from './containers/app'
@@ -15,9 +17,16 @@ import './scss/app.scss'
 let _url = `${window.location.origin}/api`
 if (window.location.origin.indexOf('localhost') > -1) _url = 'http://localhost:3001/api'
 
+const history = createBrowserHistory()
+
 const store = createStore(
-  reducer,
-  applyMiddleware(thunk)
+  reducer(history),
+  compose(
+    applyMiddleware(
+      thunk,
+      routerMiddleware(history)
+    )
+  )
 )
 
 const tokCookie = decodeURIComponent(document.cookie).split(' ').find(x => x.startsWith('tok='))
@@ -34,9 +43,9 @@ Ajax.setTokenData({
 const A = () =>
   <ErrorBoundary>
     <Provider store={store}>
-      <Router basepath='/'>
+      <Router basepath='/' history={history}>
         <Route path='/' exact component={Home} />
-        <Route path='/box' exact component={App} />
+        <Route path='/box*' exact component={App} />
       </Router>
     </Provider>
   </ErrorBoundary>
