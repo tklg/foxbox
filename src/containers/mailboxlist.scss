@@ -9,6 +9,27 @@
   overflow: hidden;
   max-height: 100%;
 
+  $stackItemHeight: 15px;
+
+  .provider-item {
+    .stack {
+      margin: 5px 0;
+      line-height: $stackItemHeight;
+
+      span {
+        display: inline-block;
+        width: 100%;
+        height: $stackItemHeight;
+        line-height: $stackItemHeight;
+
+        &.address {
+          color: $white-3;
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+
   ul {
     margin: 0;
     padding: 0;

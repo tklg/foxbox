@@ -6,9 +6,6 @@ import './mailbox.scss'
 import ProviderList from './ProviderList'
 
 class Mailbox extends React.Component {
-  constructor () {
-    super()
-  }
   componentDidMount () {
     if (this.props.provider && this.props.path && !this.props.messages.length && this.props.flatboxes.length) {
       this.props.dispatch(fetchMessages(this.props.provider, this.props.path, this.props.flatboxes.find(x => x.path === this.props.path).messageCount))
@@ -21,14 +18,14 @@ class Mailbox extends React.Component {
   }
   getMessage (m, i) {
     const envelope = m.envelope
-    return <li key={m.uid} className={'mail flex-container' + (m.flags.includes('\\Seen') ? ' seen' : '')}>
+    return <div key={m.uid} className={'mail flex-container' + (m.flags.includes('\\Seen') ? ' seen' : '')}>
       <div className='stack from'>
         <span className='from-name'>{envelope.from[0].name || envelope.from[0].address.split('@')[0]}</span>
         <span className='from-address'>{envelope.from[0].address}</span>
       </div>
       <span className='flex subject'>{envelope.subject}</span>
       <span className='date'>{envelope.date}</span>
-    </li>
+    </div>
   }
   render () {
     return <div className='mailbox flex'>
@@ -39,9 +36,9 @@ class Mailbox extends React.Component {
         </div>
       }
       {this.props.mailboxes.length > 0 &&
-        <ul className='mails'>
+        <div className='mails'>
           {this.props.messages.map(this.getMessage)}
-        </ul>
+        </div>
       }
     </div>
   }

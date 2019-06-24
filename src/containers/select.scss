@@ -6,9 +6,10 @@
   line-height: 40px;
   margin: 0 10px;
   cursor: pointer;
+  z-index: 900;
 
   .select-current {
-    padding: 0 10px;
+    padding: 0;
     border-bottom: 2px solid $white-4;
 
     span {
@@ -66,7 +67,6 @@
                 .1s color $transition;
 
     li {
-      display: inline-block;
       width: 100%;
       padding: 0 10px;
       border-bottom: 1px solid $white-5;
@@ -98,7 +98,7 @@
     box-shadow: $shadow-1;
     padding: 10px 0;
     overflow: auto;
-    max-height: calc(100vh / 2);
+    max-height: 50vh;
     pointer-events: all;
   }
 }

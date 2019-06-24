@@ -18,7 +18,13 @@ class MailboxList extends React.Component {
   }
   getProvider ({ item, index }) {
     return (
-      <div><Icon icon={item.icon} /><span>{item.name}</span></div>
+      <div className='flex-container provider-item'>
+        <Icon icon={item.icon} />
+        <div className='stack flex'>
+          <span>{item.name}</span>
+          <span className='address'>{item.address}</span>
+        </div>
+      </div>
     )
   }
   render () {

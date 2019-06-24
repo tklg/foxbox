@@ -44,7 +44,8 @@ module.exports = {
         return {
           id: hash(x.id),
           name,
-          icon
+          icon,
+          address: x.email
         }
       })
     })
