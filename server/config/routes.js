@@ -10,5 +10,6 @@ module.exports = {
 
   'GET /api/providers/:id/mailboxes': 'Provider#listMailboxes',
 
-  'GET /api/mailboxes/:provider/:box/messages': 'Provider#listMessages'
+  'GET /api/mailboxes/:provider/:box/messages': 'Provider#listMessages',
+  'GET /api/mailboxes/:provider/:box/message/:uids': 'Provider#fetchMessages'
 }

@@ -1,11 +1,16 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import Message from './Message'
 import { fetchMessages } from '../actions/mailbox'
 import './mailbox.scss'
 
 import ProviderList from './ProviderList'
 
 class Mailbox extends React.Component {
+  constructor () {
+    super()
+    this.getMessage = this.getMessage.bind(this)
+  }
   componentDidMount () {
     if (this.props.provider && this.props.path && !this.props.messages.length && this.props.flatboxes.length) {
       this.props.dispatch(fetchMessages(this.props.provider, this.props.path, this.props.flatboxes.find(x => x.path === this.props.path).messageCount))
@@ -17,15 +22,7 @@ class Mailbox extends React.Component {
     }
   }
   getMessage (m, i) {
-    const envelope = m.envelope
-    return <div key={m.uid} className={'mail flex-container' + (m.flags.includes('\\Seen') ? ' seen' : '')}>
-      <div className='stack from'>
-        <span className='from-name'>{envelope.from[0].name || envelope.from[0].address.split('@')[0]}</span>
-        <span className='from-address'>{envelope.from[0].address}</span>
-      </div>
-      <span className='flex subject'>{envelope.subject}</span>
-      <span className='date'>{envelope.date}</span>
-    </div>
+    return <Message data={m} {...{ provider: this.props.provider, path: this.props.path }} key={m.uid} />
   }
   render () {
     return <div className='mailbox flex'>

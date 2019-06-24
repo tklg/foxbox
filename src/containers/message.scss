@@ -1,0 +1,203 @@
+@import '../scss/vars';
+
+$mailHeight: 50px;
+$stackItemHeight: 15px;
+
+.mail {
+  display: block;
+  height: $mailHeight;
+  line-height: $mailHeight;
+  padding: 0 14px;
+  margin: 0;
+  cursor: pointer;
+  transition: margin .15s $transition;
+  border-bottom: 1px solid $black-4;
+
+  a {
+    color: $white-2;
+    text-decoration: none !important;
+  }
+
+  &:last-of-type {
+    border: none;
+  }
+  &:not(.seen) {
+    a {
+      color: $accent-2;
+      background: $white-4;
+    }
+  }
+  &.seen:hover {
+    a {
+      background: $white-5;
+      color: $white-1;
+    }
+  }
+
+  .stack {
+    padding: #{($mailHeight - ($stackItemHeight * 2)) / 2} 0;
+    line-height: $stackItemHeight;
+    font-size: 0;
+
+    span {
+      display: block;
+      font-size: initial;
+      width: 100%;
+      height: $stackItemHeight;
+      padding: 0 14px 0 0;
+
+      @include ellip();
+    }
+  }
+
+  .from {
+    width: 300px;
+    max-width: 40%;
+
+    .from-address {
+      color: $white-3;
+      font-size: .85rem;
+    }
+  }
+  .subject {
+    padding: 0 14px 0 0;
+    @include ellip();
+  }
+  .date {
+    width: 100px;
+    max-width: 10%;
+    @include ellip();
+  }
+
+  &.open {
+    height: initial;
+    line-height: initial;
+    margin: 30px 14px;
+    padding: 0;
+    background: $background-2;
+    box-shadow: $shadow-2;
+    cursor: initial;
+  }
+
+  .message {
+    $footerHeight: 60px;
+
+    header {
+      box-shadow: none;
+      line-height: 60px;
+      height: 60px;
+      border-bottom: 1px solid $accent-1;
+      margin-bottom: 14px;
+    }
+    .info {
+      padding: 0 14px;
+
+      .from {
+        color: $white-1;
+        max-width: initial;
+        width: initial;
+
+        .from-address {
+          color: $white-3;
+        }
+      }
+
+      .date {
+        line-height: 50px;
+        max-width: initial;
+        width: initial;
+        color: $white-2;
+      }
+    }
+    .content {
+      color: $white-2;
+      padding: 0 14px;
+      font-size: 1em;
+      width: 100%;
+      max-width: 900px;
+      white-space: pre;
+
+      $loaderWidth: 1200px;
+
+      @keyframes placeHolderShimmer{
+          0%{
+              background-position: -$loaderWidth 0
+          }
+          100%{
+              background-position: $loaderWidth 0
+          }
+      }
+
+      .loader {
+        height: 60px;
+        position: relative;
+
+        &:before,
+        &:after {
+          position: absolute;
+          content: '';
+          top: 0;
+          left: 0;
+          width: 80%;
+          height: 24px;
+          border-radius: 4px;
+          animation-duration: 3s;
+          animation-fill-mode: forwards;
+          animation-iteration-count: infinite;
+          animation-name: placeHolderShimmer;
+          animation-timing-function: linear;
+          background: $white-5;
+          background: linear-gradient(to right, $white-5 8%, $accent-1 18%, $white-5 33%);
+          background-size: $loaderWidth 60px;
+        }
+
+        &:after {
+          top: 30px;
+          width: 60%;
+        }
+      }
+      p {
+        margin: 0 0 14px 0;
+        font-size: 1em;
+        line-height: .8em;
+      }
+      .html {
+        color: $white-2 !important;
+      }
+    }
+    footer {
+      min-height: $footerHeight;
+      line-height: $footerHeight;
+      margin-top: 14px;
+      border-top: 1px solid $accent-1;
+      background: $background-3;
+
+      textarea {
+        background: $background-3;
+        color: $white-2;
+        border: none;
+        outline: none;
+        min-height: $footerHeight;
+        height: $footerHeight;
+        max-height: 300px;
+        resize: vertical;
+        margin-right: 14px;
+        padding: 21px 14px 14px 14px;
+        font-size: 1em;
+        font-family: 'Montserrat', sans-serif;
+      }
+      .btn {
+        height: 40px;
+        line-height: 40px;
+        margin: 10px 14px 10px 0;
+      }
+      .icon-button {
+        margin: 10px 14px 10px 0;
+
+        path {
+          fill: $white-3;
+        }
+      }
+    }
+  }
+}

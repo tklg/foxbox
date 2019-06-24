@@ -45,8 +45,9 @@ h1, h2, h3, h4 {
   font-weight: lighter;
 }
 
-.text {
-  font-family: 'Fanwood Text', serif;
+.text,
+textarea {
+  // font-family: 'Fanwood Text', serif;
 }
 
 .flex-container {
@@ -91,7 +92,9 @@ h1, h2, h3, h4 {
   font-size: 0.9rem;
   text-transform: uppercase;
   box-shadow: $shadow-1;
-  transition: box-shadow .15s ease-in-out;
+  transition: box-shadow .15s $transition,
+              color .15s $transition,
+              background .15s $transition;
   cursor: pointer;
   user-select: none;
 
@@ -105,8 +108,8 @@ h1, h2, h3, h4 {
     box-shadow: $shadow-2;
   }
   &:disabled {
-    background: $black-5;
-    color: $black-3;
+    background: $white-3;
+    color: $black-2;
     pointer-events: none;
   }
   &.btn-with-icon {
