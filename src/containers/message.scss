@@ -43,7 +43,7 @@ $stackItemHeight: 15px;
       display: block;
       font-size: initial;
       width: 100%;
-      height: $stackItemHeight;
+      height: #{$stackItemHeight + 3px};
       padding: 0 14px 0 0;
 
       @include ellip();
@@ -64,7 +64,8 @@ $stackItemHeight: 15px;
     @include ellip();
   }
   .date {
-    width: 100px;
+    color: $white-3;
+    font-size: .85rem;
     max-width: 10%;
     @include ellip();
   }

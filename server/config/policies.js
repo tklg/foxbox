@@ -5,6 +5,9 @@ module.exports = {
   ProviderController: {
     list: [ 'tokenAuth' ],
     connect: [ 'sessionAuth' ],
-    connectCallback: [ 'sessionAuth' ]
+    connectCallback: [ 'sessionAuth' ],
+    listMailboxes: [ 'tokenAuth' ],
+    listMessages: [ 'tokenAuth' ],
+    fetchMessages: [ 'tokenAuth' ]
   }
 }

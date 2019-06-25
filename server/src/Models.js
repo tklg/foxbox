@@ -199,7 +199,8 @@ function bindModel (name, { beforeCreate, beforeUpdate, beforeDelete, ...desc })
 
 function validType (value, type) {
   switch (type) {
-    case 'string': return typeof value === 'string'
+    case 'string':
+    case 'text': return typeof value === 'string'
     case 'boolean': return typeof value === 'boolean'
     case 'integer':
     case 'number': return Number.isInteger(value)

@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import IconButton from '../components/IconButton'
 import { fetchBody } from '../actions/mailbox'
+import dayjs from 'dayjs'
 
 import './message.scss'
 
@@ -34,6 +35,11 @@ class Message extends React.Component {
   }
   render () {
     const envelope = this.props.data.envelope
+    const date = dayjs(envelope.date)
+    const isToday = date.isSame(dayjs(), 'day')
+    let time = isToday ? date.format('h:mm a') : date.format('MMM D')
+    if (date.isBefore(dayjs().subtract(1, 'year'))) time = date.format('MMM D YYYY')
+    const fullTime = date.format('MMM D, YYYY [at] h:mm a')
 
     return (
       <div className={'mail' + (this.props.data.flags.includes('\\Seen') ? ' seen' : '') + (this.props.open ? ' open' : '')}>
@@ -45,14 +51,16 @@ class Message extends React.Component {
                 <span className='from-address'>{envelope.from[0].address}</span>
               </div>
               <span className='flex subject'>{envelope.subject}</span>
-              <span className='date'>{envelope.date}</span>
+              <span className='date'>{time}</span>
             </div>
           </NavLink>
         }
         {this.props.open &&
           <div className='message flex-container flex-vertical'>
             <header>
-              <h1>{envelope.subject}</h1>
+              <NavLink to={`/box/${this.props.provider}/${this.props.path}`}>
+                <h1>{envelope.subject}</h1>
+              </NavLink>
             </header>
             <section className='flex flex-container flex-vertical'>
               <div className='info flex-container'>
@@ -61,7 +69,7 @@ class Message extends React.Component {
                   <span className='from-address'>{envelope.from[0].address}</span>
                 </div>
                 <div className='date'>
-                  <span className='date'>{envelope.date}</span>
+                  <span className='date'>{fullTime}</span>
                 </div>
               </div>
               <div className='content text flex'>
