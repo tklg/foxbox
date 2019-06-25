@@ -26,6 +26,7 @@ $stackItemHeight: 15px;
       color: $accent-2;
       background: $white-4;
     }
+    background: $white-5;
   }
   &.seen:hover {
     a {
@@ -89,6 +90,10 @@ $stackItemHeight: 15px;
       height: 60px;
       border-bottom: 1px solid $accent-1;
       margin-bottom: 14px;
+
+      h1 {
+        @include ellip();
+      }
     }
     .info {
       padding: 0 14px;
@@ -163,7 +168,10 @@ $stackItemHeight: 15px;
         line-height: .8em;
       }
       .html {
-        color: $white-2 !important;
+        border: none;
+        width: 100%;
+        max-width: 900px;
+        overflow: hidden;
       }
     }
     footer {

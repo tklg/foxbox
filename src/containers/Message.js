@@ -1,3 +1,4 @@
+/* global Blob */
 import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
@@ -6,6 +7,10 @@ import { fetchBody } from '../actions/mailbox'
 import dayjs from 'dayjs'
 
 import './message.scss'
+const framecss = `body{color:#cdcdcd;background:#1d1d1f;margin:0;font-family:sans-serif;}a,a>span{color:#3a9374!important;}`
+
+const cache = new Map()
+const frameURL = URL.createObjectURL(new Blob([framecss], { type: 'text/css' }))
 
 class Message extends React.Component {
   constructor () {
@@ -15,11 +20,26 @@ class Message extends React.Component {
       loading: false
     }
     this.setReply = this.setReply.bind(this)
+    this.resizeFrame = this.resizeFrame.bind(this)
+
+    this.frameRef = React.createRef()
   }
   setReply (e) {
     this.setState({
       reply: e.target.value
     })
+  }
+  resizeFrame () {
+    const node = this.frameRef.current
+    if (node) {
+      node.height = node.contentWindow.document.documentElement.scrollHeight || 'auto'
+
+      const link = document.createElement('link')
+      link.href = frameURL
+      link.rel = 'stylesheet'
+      link.type = 'text/css'
+      node.contentWindow.document.body.appendChild(link)
+    }
   }
   componentDidUpdate (prevProps, prevState) {
     if (!this.props.data.body && !this.state.loading) {
@@ -40,6 +60,13 @@ class Message extends React.Component {
     let time = isToday ? date.format('h:mm a') : date.format('MMM D')
     if (date.isBefore(dayjs().subtract(1, 'year'))) time = date.format('MMM D YYYY')
     const fullTime = date.format('MMM D, YYYY [at] h:mm a')
+    let blob
+    if (this.props.open && this.props.data.body && this.props.data.body.html) {
+      if (!cache.has(this.props.data.uid)) {
+        cache.set(this.props.data.uid, URL.createObjectURL(new Blob([this.props.data.body.html], { type: 'text/html' })))
+      }
+      blob = cache.get(this.props.data.uid)
+    }
 
     return (
       <div className={'mail' + (this.props.data.flags.includes('\\Seen') ? ' seen' : '') + (this.props.open ? ' open' : '')}>
@@ -76,7 +103,7 @@ class Message extends React.Component {
                 {this.state.loading &&
                   <div className='loader' />
                 }
-                {this.props.data.body && this.props.data.body && this.props.data.body.html && <div className='html' dangerouslySetInnerHTML={{ __html: this.props.data.body.html }} />}
+                {this.props.data.body && this.props.data.body && this.props.data.body.html && <iframe className='html' ref={this.frameRef} src={blob} onLoad={this.resizeFrame} />}
                 {this.props.data.body && !this.props.data.body.html && <p>{this.props.data.body.text}</p>}
               </div>
             </section>

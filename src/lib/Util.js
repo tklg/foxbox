@@ -30,16 +30,34 @@ function validContrast (color, bg) {
 }
 
 function findAndFixColors (html, bg) {
-  return html.replace(/color:\s*(.+?)([;"'])/g, function (matched, match, end) {
-    if (/#\d{3}\d{3}?/.test(match)) {
-      if (!validContrast(match, bg)) {
-        return `color:rgb(${fixContrast(match, bg, bg).join(',')})${end}`
+  return html.replace(/color:\s*(.+?)((?:\s*!important)?[;"'])/g, function (matched, color, end) { // fix text contrast
+    console.log(matched)
+    if (/#[\w\d]{3}([\w\d]{3})?/.test(color)) {
+      if (!validContrast(color, bg)) {
+        return `color:rgb(${fixContrast(color, bg, bg).join(',')})${end}`
       } else return matched
-    } else if (/rgb\(\d+,\s*\d+,\s*\d+\)/.test(match)) {
-      const m = /rgb\((\d+),\s*(\d+),\s*(\d+)\)/.exec(match)
+    } else if (/rgb\(\d+,\s*\d+,\s*\d+\)/.test(color)) {
+      const m = /rgb\((\d+),\s*(\d+),\s*(\d+)\)/.exec(color)
       const hex = rgb2hex(m[1], m[2], m[3])
       if (!validContrast(hex, bg)) {
         return `color:rgb(${fixContrast(hex, bg, bg).join(',')})${end}`
+      } else return matched
+    } else {
+      return matched
+    }
+  }).replace(/(bgcolor\s*=\s*["']?|background(?:-color)?:\s*)(.+?)([\s>"';])/g, function (matched, prop, color, end) { // replace background colors
+    console.log(matched)
+    console.log(color)
+    console.log(validContrast(color, '#f2f2f2'))
+    if (/#[\w\d]{3}([\w\d]{3})?/.test(color)) {
+      if (!(colorContrast(color, '#f2f2f2') > 2)) {
+        return `${prop}#1d1d1f${end}`
+      } else return matched
+    } else if (/rgb\(\d+,\s*\d+,\s*\d+\)/.test(color)) {
+      const m = /rgb\((\d+),\s*(\d+),\s*(\d+)\)/.exec(color)
+      const hex = rgb2hex(m[1], m[2], m[3])
+      if (!(colorContrast(hex, '#f2f2f2') > 2)) {
+        return `${prop}#1d1d1f${end}`
       } else return matched
     } else {
       return matched

@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import Message from './Message'
+import Spinner from '../components/Spinner'
 import { fetchMessages } from '../actions/mailbox'
 import './mailbox.scss'
 
@@ -25,14 +26,15 @@ class Mailbox extends React.Component {
     return <Message data={m} {...{ provider: this.props.provider, path: this.props.path }} key={m.uid} />
   }
   render () {
-    return <div className='mailbox flex'>
+    return <div className='mailbox flex flex-container'>
       {!this.props.mailboxes.length &&
         <div className='connect-provider flex-container flex-center'>
           <h1>Sign in to a mailbox to get started.</h1>
           <ProviderList />
         </div>
       }
-      {this.props.mailboxes.length > 0 &&
+      {this.props.mailboxes.length > 0 && !this.props.messages.length && <div className='flex flex-container flex-center'><Spinner /></div>}
+      {this.props.mailboxes.length > 0 && this.props.messages.length &&
         <div className='mails'>
           {this.props.messages.map(this.getMessage)}
         </div>

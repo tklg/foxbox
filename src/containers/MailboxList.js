@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import MailboxListItem from './MailboxListItem'
 import Icon from '../components/Icon'
+import Spinner from '../components/Spinner'
 import Select from './Select'
 import { setProvider } from '../actions/providers'
 import './mailboxlist.scss'
@@ -36,9 +37,12 @@ class MailboxList extends React.Component {
         placeholder='Select mailbox'
         onChange={(i) => this.props.dispatch(setProvider(this.props.providers[i].id))} />
 
-      <ul className='flex'>
-        {this.getMailboxes(this.props.mailboxes)}
-      </ul>
+      {!this.props.mailboxes.length && <div className='flex flex-container flex-center'><Spinner /></div>}
+      {this.props.mailboxes.length &&
+        <ul className='flex'>
+          {this.getMailboxes(this.props.mailboxes)}
+        </ul>
+      }
     </div>
   }
 }
